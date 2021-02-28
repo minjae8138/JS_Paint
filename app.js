@@ -1,52 +1,88 @@
 const canvas = document.getElementById("jsCanvas")
 const ctx = canvas.getContext("2d")
+const colors = document.getElementsByClassName("control_color");
+const fill = document.getElementById("jsMode");
+const brush = document.getElementById("jsRange")
 
-canvas.width = 500;
-canvas.height = 500;
-ctx.strokeStyle = "#2c2c2c";
+const INITIAL_COLOR = "#2c2c2c";
+const CANVAS_SIZE = 500;
+
+canvas.width = CANVAS_SIZE;
+canvas.height = CANVAS_SIZE;
+
+ctx.strokeStyle = INITIAL_COLOR;
+ctx.fillStyle = INITIAL_COLOR;
 ctx.lineWidth = 2.5;
 
 let painting = false;
+let filling = false;
+
+function stopPainting() {
+    painting = false;
+  }
+
+function startPainting() {
+painting = true;
+}
 
 function onMouseMove(event){
     const x = event.offsetX
     const y = event.offsetY
-    if (!painting){
-        ctx.beginPath()
-        ctx.moveTo(x,y)
-    }else{
+    if (painting && !filling){
         ctx.lineTo(x,y)
         ctx.stroke()
+        
+    }else{
+        ctx.beginPath()
+        ctx.moveTo(x,y)
     }   
 }
-
-function onMouseDown(event){
-    painting=true;
-}
-
-function onMouseUp(event){
-    painting=false;
-}
-
-function onMouseLeave(event){
-    painting = false;
-}
-
-if (canvas){
-    addEventListener("mousemove",onMouseMove)
-    addEventListener("mousedown",onMouseDown)
-    addEventListener("mouseup",onMouseUp)
-    addEventListener("mouseleave",onMouseLeave)
-}
-
-const colors = document.getElementsByClassName("control_color");
-
 
 function changeColor(event){
     const color = event.target.style.backgroundColor;
     ctx.strokeStyle = color;
-
+    ctx.fillStyle = color;
 }
 
-Array.from(colors).forEach(color => color.addEventListener("click", changeColor))
+function changeBrush(event){
+    const size = event.target.value;
+    ctx.lineWidth = size;
+}
+
+function clickFill(event){
+    if (filling===false){
+        filling = true;
+        fill.innerHTML = "Paint"
+    }else{
+        filling = false;
+        fill.innerHTML = "Fill"
+    }
+}
+
+function paintAll(event){
+    if (filling){
+        ctx.fillRect(0,0,CANVAS_SIZE,CANVAS_SIZE);
+    }
+}
+
+if (canvas){
+    canvas.addEventListener("mousemove",onMouseMove)
+    canvas.addEventListener("mousedown",startPainting)
+    canvas.addEventListener("mouseup",stopPainting)
+    canvas.addEventListener("mouseleave",stopPainting)
+    canvas.addEventListener("click",paintAll)
+}
+
+Array.from(colors).forEach(color => 
+    color.addEventListener("click", changeColor)
+);
+
+if (brush){
+    brush.addEventListener("input",changeBrush);
+}
+
+if (fill) {
+    fill.addEventListener("click",clickFill);
+}
+
 
