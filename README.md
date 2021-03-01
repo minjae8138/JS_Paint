@@ -1,8 +1,7 @@
-- Canvas API
-- Vanila Javascript
+#### url: https://minjae8138.github.io/PaintJS/.
 
 
 
 You can draw anything what you want
 
-you can save image file
+You can save image file
